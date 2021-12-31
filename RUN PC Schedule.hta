@@ -56,7 +56,7 @@ Version="1.0">
   </table>
 
 
-<h4 id="result"></hp>
+<h4 id="idprocess">aaaaaaaaaaaaa</hp>
 
 
 
@@ -94,8 +94,8 @@ Version="1.0">
 '================================================================================'
 '================================================================================'
     Function antilockBtn()
-    killProcessId = 14696
-    filePath = "C:\Users\PituNSD\Desktop\Program PC\a_lock.vbs"
+    killProcessId = 764
+    filePath = "E:\1. PROGRAMARE\6. Python\hta-pc-tools\a_lock.vbs"
       if document.getElementByID("antilockBtn").innerHTML = "Porneste Antilock" Then
       intAnswer = Msgbox("Vrei sa rulezi ANTILOCK-ul?", vbYesNo, "Antilock")
       If intAnswer = vbYes Then
@@ -104,14 +104,16 @@ Version="1.0">
         EXIT FUNCTION
       End If
         if array_antilock(0) = True then
-        killProcessId = array_antilock(1)
+          killProcessId = array_antilock(1)
+          document.getElementByID("idprocess").innerHTML = killProcessId
           document.getElementByID("antilockBtn").disabled = False
           document.getElementByID("antilockBtn").className = "btn btn-danger"
           document.getElementByID("antilockBtn").innerHTML = "Opreste Antilock"
         END IF
         EXIT FUNCTION
       Elseif document.getElementByID("antilockBtn").innerHTML = "Opreste Antilock" then
-      'msgbox killProcessId
+      'msgbox killProcessId'
+        killProcessId = document.getElementByID("idprocess").innerHTML
         OffAntilock killProcessId, filePath
         document.getElementByID("antilockBtn").disabled = False
         document.getElementByID("antilockBtn").className = "btn btn-primary"
