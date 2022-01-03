@@ -2,7 +2,7 @@
 <html>
 <head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<meta http-equiv="x-ua-compatible" content="ie=9">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
 <title>Schedule PC</title>
 <HTA:Application
 ApplicationName="Nihil Sine Deo"
@@ -14,6 +14,7 @@ MaximizeButton="no"
 MinimizeButton="yes"
 Scroll="no"
 SingleInstance="yes"
+SysMenu=”no”
 Version="1.0">
 
 </head>
@@ -55,10 +56,16 @@ Version="1.0">
 
   </table>
 
+  <div>
+    <h4 id="idprocess" hidden>id</hp>
+  </div>
 
-<h4 id="idprocess">aaaaaaaaaaaaa</hp>
-
-
+  <script>
+  window.addEventListener("load", function(){
+    var pid = document.getElementById("idprocess").innerHTML;
+    //alert(pid)
+  });
+  </script>
 
   <script language="vbscript">
     Function  shutDownBtb()
@@ -94,16 +101,21 @@ Version="1.0">
 '================================================================================'
 '================================================================================'
     Function antilockBtn()
-    killProcessId = 764
-    filePath = "E:\1. PROGRAMARE\6. Python\hta-pc-tools\a_lock.vbs"
+    With CreateObject("WScript.Shell")
+        CurrentPath=.CurrentDirectory
+    End With
+    killProcessId = 1996
+    filePath = "E:\1. PROGRAMARE\6. Python\hta-pc-tools\E:\1. PROGRAMARE\6. Python\hta-pc-tools\RUN PC Schedule.hta"
+
       if document.getElementByID("antilockBtn").innerHTML = "Porneste Antilock" Then
       intAnswer = Msgbox("Vrei sa rulezi ANTILOCK-ul?", vbYesNo, "Antilock")
       If intAnswer = vbYes Then
         array_antilock = OnAntilock(killProcessId, filePath)
-      ELSE:
+      else
         EXIT FUNCTION
       End If
-        if array_antilock(0) = True then
+
+      if array_antilock(0) = True then
           killProcessId = array_antilock(1)
           document.getElementByID("idprocess").innerHTML = killProcessId
           document.getElementByID("antilockBtn").disabled = False
@@ -125,6 +137,7 @@ Version="1.0">
 '================================================================================'
 '================================================================================'
     Function OnAntilock(killProcessId, filePath)
+
         OnAntilock = False
   			dim i
   			i = 0
@@ -145,7 +158,8 @@ Version="1.0">
       g_sScriptFolder = fso.GetAbsolutePathName(".\") '".\
       g_sScriptPath = replace(window.document.location.pathname,"%20"," ")
 
-    	Call SetProcessDetailsInFile(g_sScriptPath, dictProcessDetails("ProcessID"), g_sScriptFolder & chr(92) & "a_lock.vbs")
+      'g_sScriptFolder & chr(92) & "scal.vbs"'
+    	Call SetProcessDetailsInFile(g_sScriptPath, dictProcessDetails("ProcessID"), g_sScriptFolder & chr(92)  & g_sScriptPath)
 
 
     	SetNewProcessDetails = dictProcessDetails("ProcessID")
@@ -172,8 +186,11 @@ Version="1.0">
       g_sScriptFolder = fso.GetAbsolutePathName(".\") '".\
       g_sScriptName = Right(g_sScriptPath, Len(g_sScriptPath) -(Len(g_sScriptFolder)+1))
     	'currentProgram=wscript.ScriptName'
+
+
+
       currentProgram = g_sScriptName
-        WshShell.Run """a_lock.vbs"""
+        WshShell.Run """scal.vbs"""
         WshShell.Run "Timeout /T " & 1 & " /nobreak" ,0 ,true
 
     	Const strComputer = "."
@@ -184,7 +201,7 @@ Version="1.0">
       Set colProcessList = objWMIService.ExecQuery(query)
 
     	For Each objProcess in colProcessList
-    		If (InStr (objProcess.commandLine,g_sScriptFolder & chr(92) & "a_lock.vbs") <> 0 )Then
+    		If (InStr (objProcess.commandLine,g_sScriptFolder & chr(92) & "scal.vbs") <> 0 )Then
      			processDetails="Current ProcessId : "& objProcess.ProcessId & " \n, And Process Name:" & objProcess.name &"\n CommandLine is :"& objProcess.CommandLine
           'msgbox processDetails'
           Dim objDictionary
@@ -197,31 +214,6 @@ Version="1.0">
     	Next
 
     End Function
-'================================================================================'
-'================================================================================'
-'================================================================================'
-
-    Function SetProcessDetailsInFile(filePath, killProcessId, filePathValue)
-    	Set fso = CreateObject("Scripting.FileSystemObject")
-    	Set fso2 = CreateObject("Scripting.FileSystemObject")
-
-    	Set reKillProcess = New RegExp
-    	reKillProcess.Pattern = "(\bkillProcessId =\s+(.*))"
-    	reKillProcess.Global  = False
-    	reKillProcess.IgnoreCase = True
-
-    	Set reFilePath = New RegExp
-    	reFilePath.Pattern = "(\bfilePath =\s+(.*))"
-    	reFilePath.Global  = False
-    	reFilePath.IgnoreCase = True
-
-
-    	text2 = fso.OpenTextFile(filePath).ReadAll
-    	fso2.OpenTextFile(filePath, 2).Write reFilePath.Replace(text2, "filePath = " & Chr(34) & filePathValue & Chr(34) )
-
-    	text = fso.OpenTextFile(filePath).ReadAll
-    	fso.OpenTextFile(filePath, 2).Write reKillProcess.Replace(text, "killProcessId = " & killProcessId)
-    End Function
 
 '================================================================================'
 '================================================================================'
@@ -233,16 +225,25 @@ Version="1.0">
 '================================================================================'
 '================================================================================'
     Function KillProcessAndSetNewValues(fPath, processId)
-    	Call SetProcessDetailsInFile(fPath, False, False)
 
     	Call KillProcess(fPath, processId)
+
+      Set WshShell = CreateObject("WScript.Shell")
+      Set fso_this = CreateObject("Scripting.FileSystemObject")
+      g_sScriptPath = replace(window.document.location.pathname,"%20"," ")
+      g_sScriptFolder = fso_this.GetAbsolutePathName(".\") '".\
+      g_sScriptName = Right(g_sScriptPath, Len(g_sScriptPath) -(Len(g_sScriptFolder)+1))
+      set WshShell = Nothing
+
+      'MSGBOX g_sScriptFolder & "\" & g_sScriptName '\
+      Call SetProcessDetailsInFile(g_sScriptFolder & chr(92) & g_sScriptName, "False", "False")
 
     End Function
 '================================================================================'
 '================================================================================'
 '================================================================================'
     Function KillProcess(fPath, processId)
-      msgbox fPath & "   pid   " & processId
+      'msgbox fPath & "   pid   " & processId'
     	Set WshShell = CreateObject("WScript.Shell")
       WshShell.Run "Timeout /T " & 0.7 & " /nobreak" ,0 ,true
     	strCommand = "taskkill /F /PID " & processId
@@ -274,12 +275,41 @@ Version="1.0">
 '================================================================================'
 '================================================================================'
 '================================================================================'
+
+    Function SetProcessDetailsInFile(filePath, killProcessId, filePathValue)
+    	Set fso = CreateObject("Scripting.FileSystemObject")
+    	Set fso2 = CreateObject("Scripting.FileSystemObject")
+
+    	Set reKillProcess = New RegExp
+    	reKillProcess.Pattern = "(\bkillProcessId =\s+(.*))"
+    	reKillProcess.Global  = False
+    	reKillProcess.IgnoreCase = True
+
+    	Set reFilePath = New RegExp
+    	reFilePath.Pattern = "(\bfilePath =\s+(.*))"
+    	reFilePath.Global  = False
+    	reFilePath.IgnoreCase = True
+
+    	text2 = fso.OpenTextFile(filePath).ReadAll
+    	fso2.OpenTextFile(filePath, 2).Write reFilePath.Replace(text2, "filePath = " & Chr(34) & filePathValue & Chr(34) )
+
+    	text = fso.OpenTextFile(filePath).ReadAll
+    	fso.OpenTextFile(filePath, 2).Write reKillProcess.Replace(text, "killProcessId = " & killProcessId)
+    End Function
+
+    '================================================================================'
+    '================================================================================'
+    '================================================================================'
   </script>
 
   <script language="javascript" type="text/javascript">
-    window.onbeforeunload = function(){
-
-      windowalert("dsadas") };
+    window.addEventListener('beforeunload', function (e) {
+      // Cancel the event
+      e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+      // Chrome requires returnValue to be set
+      e.returnValue = 'Eventualele programari vor rula in continuare!!!';
+    });
   </script>
+
 </body>
 </html>
