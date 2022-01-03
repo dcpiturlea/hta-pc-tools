@@ -84,7 +84,7 @@ Version="1.0">
         document.getElementByID("shutDownBtb").className = "btn btn-danger"
         document.getElementByID("shutDownBtb").innerHTML = "Opreste ShutDown"
       Elseif document.getElementByID("shutDownBtb").innerHTML = "Opreste ShutDown" then
-        msgbox "Pc-ul nu se va mai inchide!"
+        msgbox "Pc-ul nu se va mai inchide!", 64
         objShell.Run "shutdown -a"
         Set objShell = Nothing
         document.getElementByID("shutDownBtb").className = "btn btn-primary"
@@ -136,7 +136,7 @@ Version="1.0">
   			dim i
   			i = 0
   			pid = SetNewProcessDetails
-  			MsgBox "Gata, procesul " & pid & " a fost pornit"
+  			MsgBox "Gata, procesul " & pid & " a fost pornit", 64
         OnAntilock = array(True, pid)
     End Function
 '================================================================================'
@@ -263,7 +263,7 @@ Version="1.0">
       	  output = exec.StdOut.ReadAll
     	End If
 
-    	msgbox output
+    	msgbox output, 64
 
     End Function
 '================================================================================'
